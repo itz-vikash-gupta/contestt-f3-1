@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Employee Form</title>
+  </head>
+  <body>
+    <h3>New Employee</h3>
+    <form id="employee-form">
+      <label for="name-input">Enter Name</label><br>
+      <input type="text" id="name-input" required>
+      <br><br>
+      <label for="profession-input">Enter Profession:</label><br>
+      <input type="text" id="profession-input" required>
+      <br><br>
+      <label for="age-input">Enter Age:</label><br>
+      <input type="number" id="age-input" required><br>
+      <br>
+      <button type="submit" id="">Add User</button>
+    </form>
+    
+    <h1>Added Employees</h1>
+    <div id="employees-container"></div>
+    
+    <script>
+      const employees = [];
+      let nextId = 1;
+      
+      const form = document.getElementById('employee-form');
+      const nameInput = document.getElementById('name-input');
+      const professionInput = document.getElementById('profession-input');
+      const ageInput = document.getElementById('age-input');
+      const employeesContainer = document.getElementById('employees-container');
+      
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        
+        if (!nameInput.value || !professionInput.value || !ageInput.value) {
+          showError('All fields are required.');
+          return;
+        }
+        
+        const employee = {
+          id: nextId,
+          name: nameInput.value,
+          profession: professionInput.value,
+          age: ageInput.value
+        };
+        employees.push(employee);
+        nextId++;
+        showSuccess('Employee added successfully.');
+        renderEmployees();
+        
+        nameInput.value = '';
+        professionInput.value = '';
+        ageInput.value = '';
+      });
+      
+      function renderEmployees() {
+        employeesContainer.innerHTML = '';
+        
+        employees.forEach(employee => {
+          const employeeDiv = document.createElement('div');
+          employeeDiv.innerHTML = `
+            <p><strong>ID:</strong> ${employee.id}</p>
+            <p><strong>Name:</strong> ${employee.name}</p>
+            <p><strong>Profession:</strong> ${employee.profession}</p>
+            <p><strong>Age:</strong> ${employee.age}</p>
+            <button data-id="${employee.id}" class="delete-button">Delete Employee</button>
+          `;
+          
+          const deleteButton = employeeDiv.querySelector('.delete-button');
+          deleteButton.addEventListener('click', event => {
+            const id = Number(event.target.dataset.id);
+            const index = employees.findIndex(employee => employee.id === id);
+            if (index !== -1) {
+              employees.splice(index, 1);
+              employeeDiv.remove();
+            }
+          });
+          
+          employeesContainer.appendChild(employeeDiv);
+        });
+      }
+      
+      function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.color = 'red';
+        errorDiv.textContent = message;
+        form.insertBefore(errorDiv, form.firstChild);
+        setTimeout(() => errorDiv.remove(), 3000);
+      }
+      
+      function showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.style.color = 'green';
+        successDiv.textContent = message;
+        form.insertBefore(successDiv, form.firstChild);
+        setTimeout(() => successDiv.remove(), 3000);
+      }
+    </script>
+  </body>
+</html>
